@@ -34,8 +34,6 @@ addBtn.addEventListener('click', () => {
 })
 
 searchInput.addEventListener("keyup", () => {
-
-
     searchResultDiv.innerHTML = "";
 
     if (searchInput.value == "") {
@@ -44,27 +42,28 @@ searchInput.addEventListener("keyup", () => {
     }
 
     let searchedName = searchInput.value;
-    let result = [];
 
     db.collection('employees').get().then(querySnapshot => {
 
         querySnapshot.forEach(doc => {
-            id = doc.id
-            for (let i = 0; i < doc.data(id).name.length; i++) {
-                if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
-                    result.push(doc.data().name);
-                    console.log("ID", doc.id);
-                }
-            }
+
+
+            id = doc.id;
+
+            const searchEl = document.getElementById(id)
 
             if (searchedName.length > 0) {
                 for (let i = 0; i < searchedName.length; i++) {
                     let searchedResultP = document.createElement("p");
                     searchedResultP.className = "searched-result-p";
-                    searchedResultP.setAttribute('data-id', doc.id)
-                    searchedResultP.innerText = doc.data().name;
 
-                    searchResultDiv.appendChild(searchedResultP);
+                    if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
+                        searchedResultP.setAttribute('id', id);
+                        searchedResultP.innerText = doc.data().name;
+                        searchResultDiv.appendChild(searchedResultP);
+
+                    }
+
 
                     searchedResultP.onclick = function() {
                         let editName = document.getElementById('editName');
@@ -84,22 +83,21 @@ searchInput.addEventListener("keyup", () => {
 
 
                         saveEditedInfoBtn.onclick = function() {
-                            console.log("Clicked!")
-                            doc.data().name = editName.value;
-                            doc.data().job = editJob.value;
-                            doc.data().passport = editPassport.value;
-                            doc.data().country = editCountry.value
+                            console.log("Clicked!");
+                            db.collection('employees').doc(id).update({
+                                name: editName.value,
+                                job: editJob.value,
+                                passport: editPassport.value,
+                                country: editCountry.value,
+                            })
 
-                            employees.forEach((employee) => {
-                                if (employee.id == doc.data().id) {
-                                    employee = doc.data();
-                                }
+
+                            db.collection('employees').get().then(doc => {
+                                loadEmployees(doc);
                             });
 
-                            loadEmployees(employees);
-                            console.log(result);
-
                             editEmployeeContainer.style.display = "none";
+
                         }
                     }
                 }
@@ -114,22 +112,16 @@ searchTimesBtn.addEventListener("click", () => {
 })
 
 db.collection('employees').get().then(doc => {
-    console.log(doc);
     loadEmployees(doc);
-
-
 });
 
 function loadEmployees(employees) {
     employeesUL.innerHTML = "";
 
-
     employees.forEach((employee, id) => {
-
         const employeeLI = document.createElement('li');
         employeeLI.className = "employee-li";
-        const employeeId = employee.id
-        id = employeeId;
+        id = employee.id;
         employeeLI.setAttribute("data-id", id)
 
         const employeeNameSpan = document.createElement('span');
