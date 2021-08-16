@@ -48,6 +48,7 @@ searchInput.addEventListener("keyup", () => {
         for (let i = 0; i < db.collection('employees').length; i++) {
             if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
                 result.push(doc.data(id));
+                console.log(result)
             }
         }
 
@@ -55,7 +56,7 @@ searchInput.addEventListener("keyup", () => {
             for (let i = 0; i < searchedName.length; i++) {
                 let searchedResultP = document.createElement("p");
                 searchedResultP.className = "searched-result-p";
-                // searchedResultP.innerText = ;
+                searchedResultP.innerText = doc.data(id).name;
 
                 searchResultDiv.appendChild(searchedResultP);
 
