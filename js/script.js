@@ -34,23 +34,26 @@ addBtn.addEventListener('click', () => {
 })
 
 searchInput.addEventListener("keyup", () => {
+
+
+    searchResultDiv.innerHTML = "";
+
+    if (searchInput.value == "") {
+        searchResultDiv.innerHTML = "";
+        return;
+    }
+
+    let searchedName = searchInput.value;
+    let result = [];
+
     db.collection('employees').get().then(querySnapshot => {
+
         querySnapshot.forEach(doc => {
-
-            searchResultDiv.innerHTML = "";
-
-            if (searchInput.value == "") {
-                searchResultDiv.innerHTML = "";
-                return;
-            }
-
-            let searchedName = searchInput.value;
-            let result = [];
-
-            for (let i = 0; i < db.collection('employees').length; i++) {
+            id = doc.id
+            for (let i = 0; i < doc.data(id).name.length; i++) {
                 if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
-                    result.push(doc.data());
-                    console.log(result)
+                    result.push(doc.data().name);
+                    console.log("ID", doc.id);
                 }
             }
 
@@ -58,6 +61,7 @@ searchInput.addEventListener("keyup", () => {
                 for (let i = 0; i < searchedName.length; i++) {
                     let searchedResultP = document.createElement("p");
                     searchedResultP.className = "searched-result-p";
+                    searchedResultP.setAttribute('data-id', doc.id)
                     searchedResultP.innerText = doc.data().name;
 
                     searchResultDiv.appendChild(searchedResultP);
@@ -93,7 +97,6 @@ searchInput.addEventListener("keyup", () => {
                             });
 
                             loadEmployees(employees);
-
                             console.log(result);
 
                             editEmployeeContainer.style.display = "none";
