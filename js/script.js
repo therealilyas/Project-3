@@ -34,72 +34,75 @@ addBtn.addEventListener('click', () => {
 })
 
 searchInput.addEventListener("keyup", () => {
-    db.collection('employees').get().then(doc => {
-        searchResultDiv.innerHTML = "";
+    db.collection('employees').get().then(querySnapshot => {
+        querySnapshot.forEach(doc => {
 
-        if (searchInput.value == "") {
             searchResultDiv.innerHTML = "";
-            return;
-        }
 
-        let searchedName = searchInput.value;
-        let result = [];
-
-        for (let i = 0; i < db.collection('employees').length; i++) {
-            if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
-                result.push(doc.data(id));
-                console.log(result)
+            if (searchInput.value == "") {
+                searchResultDiv.innerHTML = "";
+                return;
             }
-        }
 
-        if (searchedName.length > 0) {
-            for (let i = 0; i < searchedName.length; i++) {
-                let searchedResultP = document.createElement("p");
-                searchedResultP.className = "searched-result-p";
-                searchedResultP.innerText = doc.data(id).name;
+            let searchedName = searchInput.value;
+            let result = [];
 
-                searchResultDiv.appendChild(searchedResultP);
+            for (let i = 0; i < db.collection('employees').length; i++) {
+                if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
+                    result.push(doc.data());
+                    console.log(result)
+                }
+            }
 
-                searchedResultP.onclick = function() {
-                    let editName = document.getElementById('editName');
-                    let editJob = document.getElementById("editJob");
-                    let editPassport = document.getElementById("editPassport");
-                    let editCountry = document.getElementById("editCountry");
-                    let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
+            if (searchedName.length > 0) {
+                for (let i = 0; i < searchedName.length; i++) {
+                    let searchedResultP = document.createElement("p");
+                    searchedResultP.className = "searched-result-p";
+                    searchedResultP.innerText = doc.data().name;
 
-                    if (editEmployeeContainer.style.display == "none") {
-                        editEmployeeContainer.style.display = "block";
-                    }
+                    searchResultDiv.appendChild(searchedResultP);
 
-                    editName.value = doc.data(id).name;
-                    editJob.value = doc.data(id).job;
-                    editPassport.value = doc.data(id).passport;
-                    editCountry.value = doc.data(id).country;
+                    searchedResultP.onclick = function() {
+                        let editName = document.getElementById('editName');
+                        let editJob = document.getElementById("editJob");
+                        let editPassport = document.getElementById("editPassport");
+                        let editCountry = document.getElementById("editCountry");
+                        let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
+
+                        if (editEmployeeContainer.style.display == "none") {
+                            editEmployeeContainer.style.display = "block";
+                        }
+
+                        editName.value = doc.data().name;
+                        editJob.value = doc.data().job;
+                        editPassport.value = doc.data().passport;
+                        editCountry.value = doc.data().country;
 
 
-                    saveEditedInfoBtn.onclick = function() {
-                        console.log("Clicked!")
-                        result[i].name = editName.value;
-                        result[i].job = editJob.value;
-                        result[i].passport = editPassport.value;
-                        result[i].country = editCountry.value
+                        saveEditedInfoBtn.onclick = function() {
+                            console.log("Clicked!")
+                            doc.data().name = editName.value;
+                            doc.data().job = editJob.value;
+                            doc.data().passport = editPassport.value;
+                            doc.data().country = editCountry.value
 
-                        employees.forEach((employee) => {
-                            if (employee.id == result[i].id) {
-                                employee = result[i];
-                            }
-                        });
+                            employees.forEach((employee) => {
+                                if (employee.id == doc.data().id) {
+                                    employee = doc.data();
+                                }
+                            });
 
-                        loadEmployees(employees);
+                            loadEmployees(employees);
 
-                        console.log(result);
+                            console.log(result);
 
-                        editEmployeeContainer.style.display = "none";
+                            editEmployeeContainer.style.display = "none";
+                        }
                     }
                 }
             }
-        }
-    })
+        });
+    });
 });
 
 searchTimesBtn.addEventListener("click", () => {
@@ -108,7 +111,9 @@ searchTimesBtn.addEventListener("click", () => {
 })
 
 db.collection('employees').get().then(doc => {
+    console.log(doc);
     loadEmployees(doc);
+
 
 });
 
