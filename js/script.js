@@ -47,10 +47,7 @@ searchInput.addEventListener("keyup", () => {
 
         querySnapshot.forEach(doc => {
 
-
             id = doc.id;
-
-            const searchEl = document.getElementById(id)
 
             if (searchedName.length > 0) {
                 for (let i = 0; i < searchedName.length; i++) {
@@ -66,6 +63,7 @@ searchInput.addEventListener("keyup", () => {
 
 
                     searchedResultP.onclick = function() {
+                        id = doc.id;
                         let editName = document.getElementById('editName');
                         let editJob = document.getElementById("editJob");
                         let editPassport = document.getElementById("editPassport");
@@ -82,22 +80,25 @@ searchInput.addEventListener("keyup", () => {
                         editCountry.value = doc.data().country;
 
 
+                        console.log("Clicked!");
+                        console.log("id", id)
+                        console.log("name", doc.data().name)
                         saveEditedInfoBtn.onclick = function() {
-                            console.log("Clicked!");
-                            db.collection('employees').doc(id).update({
-                                name: editName.value,
-                                job: editJob.value,
-                                passport: editPassport.value,
-                                country: editCountry.value,
-                            })
+                            if (id == doc.id) {
+                                db.collection('employees').doc(id).update({
+                                    name: editName.value,
+                                    job: editJob.value,
+                                    passport: editPassport.value,
+                                    country: editCountry.value,
+                                })
 
 
-                            db.collection('employees').get().then(doc => {
-                                loadEmployees(doc);
-                            });
+                                db.collection('employees').get().then(doc => {
+                                    loadEmployees(doc);
+                                });
 
-                            editEmployeeContainer.style.display = "none";
-
+                                editEmployeeContainer.style.display = "none";
+                            }
                         }
                     }
                 }
