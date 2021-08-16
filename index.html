@@ -11,28 +11,28 @@
 <body>
     <div class="container-form">
         <h2>Adding Employees Form</h2>
-        <form>
+        <form class="form">
             <table>
                 <tr>
                     <td class="label">Name:</td>
-                    <td><input type="text" id="name"></td>
+                    <td><input type="text" name="name" id="name"></td>
                 </tr>
 
                 <tr>
                     <td class="label">Job: </td>
-                    <td><input type="text" id="job"></td>
+                    <td><input type="text" name="job" id="job"></td>
                 </tr>
                 <tr>
                     <td class="label">Passport: </td>
-                    <td><input type="text" id="passport"></td>
+                    <td><input type="text" name="passport" id="passport"></td>
                 </tr>
                 <tr>
                     <td class="label">Country:</td>
-                    <td><input type="text" id="country"></td>
+                    <td><input type="text" name="country" id="country"></td>
                 </tr>
             </table>
         </form>
-        <button type="submit" class="add-employee-btn" onclick="addEmployee(event)">
+        <button type="submit" class="add-employee-btn">
             Add Employee</bFutton>
 
     </div>
@@ -49,7 +49,7 @@
         <input type="text" id="searchInput">
         <span></span>
 
-        <button class="search-times">X</button>
+        <button class="search-times" id="searchTimesBtn">X</button>
         <div id="searchResultDiv"></div>
     </div>
 
@@ -79,6 +79,31 @@
         <button type="submit" class="edit-employee-btn" id="saveEditedInfoBtn">
             Save</bFutton>
     </div>
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.9.1/firebase-firestore.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyCzTy3hJ-L_M5bjqm4U-PXG-muNkITi_7A",
+    authDomain: "crudapp-3010f.firebaseapp.com",
+    projectId: "crudapp-3010f",
+    storageBucket: "crudapp-3010f.appspot.com",
+    messagingSenderId: "784862562534",
+    appId: "1:784862562534:web:5a745e9cc0dd17781d1327",
+    measurementId: "G-CZ93JRFNVD"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
 
     <script src="js/script.js"></script>
 </body>

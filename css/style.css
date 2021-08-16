@@ -118,21 +118,8 @@ p {
     border-radius: 5px;
 }
 
-.container-search input::before {
-    position: absolute;
-    width: 3rem;
-    height: 3px;
-    background-color: black;
-}
-
-.container-search input::after {
-    position: absolute;
-    width: 3rem;
-    height: 3px;
-    background-color: black;
-}
-
 .search-times {
+    position: fixed;
     position: absolute;
     width: 1.5rem;
     height: 1.5rem;

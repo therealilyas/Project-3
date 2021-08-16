@@ -7,112 +7,124 @@ let employeesUL = document.getElementById('employeesUL');
 let searchInput = document.getElementById("searchInput");
 let searchContainer = document.getElementById("containerSearch");
 let searchResultDiv = document.getElementById("searchResultDiv");
+let searchTimesBtn = document.getElementById("searchTimesBtn");
 
 let editEmployeeContainer = document.getElementById("editEmployeeContainer");
 editEmployeeContainer.style.display = 'none';
 
-let employees = [];
+const employeeForm = document.querySelector('.container-form .form');
+const addBtn = document.querySelector('.add-employee-btn');
 
-function addEmployee(e) {
-    const employee = {
-        "id": employees.length,
-        "name": employeeName.value,
-        "job": employeeJob.value,
-        "passport": employeePassport.value,
-        "country": employeeCountry.value
-    };
 
-    employees.push(employee);
-    loadEmployees(employees);
+let id;
 
-    // Clearing the form
-    employeeName.value = '';
-    employeeJob.value = '';
-    employeePassport.value = '';
-    employeeCountry.value = '';
-}
+addBtn.addEventListener('click', () => {
+    db.collection('employees').add({
+        name: employeeForm.name.value,
+        job: employeeForm.job.value,
+        passport: employeeForm.passport.value,
+        country: employeeForm.country.value
+    });
+
+
+    employeeForm.name.value = '';
+    employeeForm.job.value = '';
+    employeeForm.passport.value = '';
+    employeeForm.country.value = '';
+})
 
 searchInput.addEventListener("keyup", () => {
-    searchResultDiv.innerHTML = "";
-
-    if (searchInput.value == "") {
+    db.collection('employees').get().then(doc => {
         searchResultDiv.innerHTML = "";
-        return;
-    }
 
-    let searchedName = searchInput.value;
-    let result = [];
-
-    for (let i = 0; i < employees.length; i++) {
-        if (employees[i].name.toLowerCase().includes(searchedName.toLowerCase())) {
-            result.push(employees[i]);
+        if (searchInput.value == "") {
+            searchResultDiv.innerHTML = "";
+            return;
         }
-    }
 
-    if (result.length > 0) {
-        for (let i = 0; i < result.length; i++) {
-            let searchedResultP = document.createElement("p");
-            searchedResultP.className = "searched-result-p";
-            searchedResultP.innerText = result[i].name;
+        let searchedName = searchInput.value;
+        let result = [];
 
-            searchResultDiv.appendChild(searchedResultP);
+        for (let i = 0; i < db.collection('employees').length; i++) {
+            if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
+                result.push(doc.data(id));
+            }
+        }
 
-            searchedResultP.onclick = function() {
-                let editName = document.getElementById('editName');
-                let editJob = document.getElementById("editJob");
-                let editPassport = document.getElementById("editPassport");
-                let editCountry = document.getElementById("editCountry");
-                let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
+        if (searchedName.length > 0) {
+            for (let i = 0; i < searchedName.length; i++) {
+                let searchedResultP = document.createElement("p");
+                searchedResultP.className = "searched-result-p";
+                // searchedResultP.innerText = ;
 
-                if (editEmployeeContainer.style.display == "none") {
-                    editEmployeeContainer.style.display = "block";
-                }
+                searchResultDiv.appendChild(searchedResultP);
 
-                editName.value = result[i].name;
-                editJob.value = result[i].job;
-                editPassport.value = result[i].passport;
-                editCountry.value = result[i].country;
+                searchedResultP.onclick = function() {
+                    let editName = document.getElementById('editName');
+                    let editJob = document.getElementById("editJob");
+                    let editPassport = document.getElementById("editPassport");
+                    let editCountry = document.getElementById("editCountry");
+                    let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
+
+                    if (editEmployeeContainer.style.display == "none") {
+                        editEmployeeContainer.style.display = "block";
+                    }
+
+                    editName.value = doc.data(id).name;
+                    editJob.value = doc.data(id).job;
+                    editPassport.value = doc.data(id).passport;
+                    editCountry.value = doc.data(id).country;
 
 
-                saveEditedInfoBtn.onclick = function() {
-                    console.log("Clicked!")
-                    result[i].name = editName.value;
-                    result[i].job = editJob.value;
-                    result[i].passport = editPassport.value;
-                    result[i].country = editCountry.value
+                    saveEditedInfoBtn.onclick = function() {
+                        console.log("Clicked!")
+                        result[i].name = editName.value;
+                        result[i].job = editJob.value;
+                        result[i].passport = editPassport.value;
+                        result[i].country = editCountry.value
 
-                    employees.forEach((employee) => {
-                        if (employee.id == result[i].id) {
-                            employee = result[i];
-                        }
-                    });
+                        employees.forEach((employee) => {
+                            if (employee.id == result[i].id) {
+                                employee = result[i];
+                            }
+                        });
 
-                    loadEmployees(employees);
+                        loadEmployees(employees);
 
-                    console.log(result);
+                        console.log(result);
 
-                    editEmployeeContainer.style.display = "none";
+                        editEmployeeContainer.style.display = "none";
+                    }
                 }
             }
         }
-    }
-
-
-
+    })
 });
 
+searchTimesBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    searchResultDiv.innerHTML = "";
+})
+
+db.collection('employees').get().then(doc => {
+    loadEmployees(doc);
+
+});
 
 function loadEmployees(employees) {
     employeesUL.innerHTML = "";
 
-    employees.forEach(employee => {
+
+    employees.forEach((employee, id) => {
 
         const employeeLI = document.createElement('li');
         employeeLI.className = "employee-li";
-        employeeLI.id = employee.id;
+        const employeeId = employee.id
+        id = employeeId;
+        employeeLI.setAttribute("data-id", id)
 
         const employeeNameSpan = document.createElement('span');
-        employeeNameSpan.innerText = employee.name;
+        employeeNameSpan.innerText = employee.data().name;
 
         const deleteEmployeeBtn = document.createElement("button");
         deleteEmployeeBtn.className = 'delete-employee-btn';
@@ -124,32 +136,28 @@ function loadEmployees(employees) {
 
         deleteEmployeeBtn.addEventListener("click", () => {
             console.log("Number of employees in company " + employees.length);
-            delete employees[employee.id];
 
-            employees = employees.filter((employees) => {
-                if (employees !== undefined) {
-                    return employees;
-                }
+            db.collection('employees').doc(id).delete().then(() => {
+                console.log('Document succesfully deleted!');
+            }).catch(err => {
+                console.log('Error removing document', err);
             });
-
             employeeLI.remove();
-
-            console.log("Number of employees in company " + employees.length);
         });
 
         const employeeDetails = document.createElement("div");
         employeeDetails.style.display = 'none';
 
         const employeeJobP = document.createElement("p");
-        employeeJobP.innerText = employee.job;
+        employeeJobP.innerText = employee.data().job;
         employeeDetails.appendChild(employeeJobP);
 
         const employeePassportP = document.createElement("p");
-        employeePassportP.innerText = employee.passport;
+        employeePassportP.innerText = employee.data().passport;
         employeeDetails.appendChild(employeePassportP);
 
         const employeeCountryP = document.createElement("p");
-        employeeCountryP.innerText = employee.country;
+        employeeCountryP.innerText = employee.data().country;
         employeeDetails.appendChild(employeeCountryP);
 
         employeeLI.appendChild(employeeDetails);
