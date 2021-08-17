@@ -17,10 +17,10 @@ let id = '';
 init();
 
 function init() {
-    getEmployees()
+    fetchEmployees()
 }
 
-function getEmployees() {
+function fetchEmployees() {
     db.collection('employees').get().then(doc => {
         loadEmployees(doc);
     });
@@ -138,7 +138,7 @@ function createEmployee() {
                         saveEditedInfoBtn.onclick = function() {
                             if (id == doc.id) {
                                 updateEmployee(id)
-                                getEmployees()
+                                fetchEmployees()
                                 editEmployeeContainer.style.display = "none";
                             }
                         }
