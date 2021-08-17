@@ -3,7 +3,6 @@ let employeeJob = document.getElementById("job");
 let employeePassport = document.getElementById("passport");
 let employeeCountry = document.getElementById("country");
 let employeesUL = document.getElementById('employeesUL');
-
 let searchInput = document.getElementById("searchInput");
 let searchContainer = document.getElementById("containerSearch");
 let searchResultDiv = document.getElementById("searchResultDiv");
@@ -14,41 +13,40 @@ editEmployeeContainer.style.display = 'none';
 
 const employeeForm = document.querySelector('.container-form .form');
 const addBtn = document.querySelector('.add-employee-btn');
-
-
 let id;
+init();
 
+function init() {
+    id = '';
+    getEmployees()
+}
 addBtn.addEventListener('click', () => {
-    db.collection('employees').add({
-        name: employeeForm.name.value,
-        job: employeeForm.job.value,
-        passport: employeeForm.passport.value,
-        country: employeeForm.country.value
-    });
-
-
-    employeeForm.name.value = '';
-    employeeForm.job.value = '';
-    employeeForm.passport.value = '';
-    employeeForm.country.value = '';
-})
-
+    addingEmployee();
+});
 searchInput.addEventListener("keyup", () => {
     searchResultDiv.innerHTML = "";
-
     if (searchInput.value == "") {
         searchResultDiv.innerHTML = "";
         return;
     }
+    editingEmployee()
+});
+searchTimesBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    searchResultDiv.innerHTML = "";
+});
 
+function getEmployees() {
+    db.collection('employees').get().then(doc => {
+        loadAllEmployees(doc);
+    });
+}
+
+function editingEmployee() {
     let searchedName = searchInput.value;
-
     db.collection('employees').get().then(querySnapshot => {
-
         querySnapshot.forEach(doc => {
-
             id = doc.id;
-
             if (searchedName.length > 0) {
                 for (let i = 0; i < searchedName.length; i++) {
                     let searchedResultP = document.createElement("p");
@@ -58,11 +56,9 @@ searchInput.addEventListener("keyup", () => {
                         searchedResultP.setAttribute('id', id);
                         searchedResultP.innerText = doc.data().name;
                         searchResultDiv.appendChild(searchedResultP);
-
                     }
-
-
                     searchedResultP.onclick = function() {
+
                         id = doc.id;
                         let editName = document.getElementById('editName');
                         let editJob = document.getElementById("editJob");
@@ -79,24 +75,10 @@ searchInput.addEventListener("keyup", () => {
                         editPassport.value = doc.data().passport;
                         editCountry.value = doc.data().country;
 
-
-                        console.log("Clicked!");
-                        console.log("id", id)
-                        console.log("name", doc.data().name)
                         saveEditedInfoBtn.onclick = function() {
                             if (id == doc.id) {
-                                db.collection('employees').doc(id).update({
-                                    name: editName.value,
-                                    job: editJob.value,
-                                    passport: editPassport.value,
-                                    country: editCountry.value,
-                                })
-
-
-                                db.collection('employees').get().then(doc => {
-                                    loadEmployees(doc);
-                                });
-
+                                updateEmployee(id)
+                                getEmployees()
                                 editEmployeeContainer.style.display = "none";
                             }
                         }
@@ -105,20 +87,49 @@ searchInput.addEventListener("keyup", () => {
             }
         });
     });
-});
+}
 
-searchTimesBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    searchResultDiv.innerHTML = "";
-})
+function addingEmployee() {
+    db.collection('employees').add({
+        name: employeeForm.name.value,
+        job: employeeForm.job.value,
+        passport: employeeForm.passport.value,
+        country: employeeForm.country.value
+    });
+    clearingEmployeeForm()
+}
 
-db.collection('employees').get().then(doc => {
-    loadEmployees(doc);
-});
+function clearingEmployeeForm() {
+    employeeForm.name.value = '';
+    employeeForm.job.value = '';
+    employeeForm.passport.value = '';
+    employeeForm.country.value = '';
+}
 
-function loadEmployees(employees) {
+function updateEmployee(id) {
+    db.collection('employees').doc(id).update({
+        name: editName.value,
+        job: editJob.value,
+        passport: editPassport.value,
+        country: editCountry.value,
+    });
+}
+
+function deleteEmployee() {
+    db.collection('employees').doc(id).delete().then(() => {
+        console.log('Document succesfully deleted!');
+    }).catch(err => {
+        console.log('Error removing document', err);
+    });
+    employeeLI.remove();
+}
+
+function loadAllEmployees(employees) {
     employeesUL.innerHTML = "";
+    loadEmployee(employees);
+}
 
+function loadEmployee(employees) {
     employees.forEach((employee, id) => {
         const employeeLI = document.createElement('li');
         employeeLI.className = "employee-li";
@@ -135,16 +146,8 @@ function loadEmployees(employees) {
         employeeLI.appendChild(employeeNameSpan);
         employeeLI.appendChild(deleteEmployeeBtn);
 
-
         deleteEmployeeBtn.addEventListener("click", () => {
-            console.log("Number of employees in company " + employees.length);
-
-            db.collection('employees').doc(id).delete().then(() => {
-                console.log('Document succesfully deleted!');
-            }).catch(err => {
-                console.log('Error removing document', err);
-            });
-            employeeLI.remove();
+            deleteEmployee();
         });
 
         const employeeDetails = document.createElement("div");
@@ -184,7 +187,6 @@ function loadEmployees(employees) {
             }
 
         }
-
         employeesUL.appendChild(employeeLI);
     });
 }
