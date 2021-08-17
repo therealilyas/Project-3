@@ -20,76 +20,17 @@ function init() {
     id = '';
     getEmployees()
 }
-addBtn.addEventListener('click', () => {
-    addingEmployee();
-});
-searchInput.addEventListener("keyup", () => {
-    searchResultDiv.innerHTML = "";
-    if (searchInput.value == "") {
-        searchResultDiv.innerHTML = "";
-        return;
-    }
-    createEmployee()
-});
-searchTimesBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    searchResultDiv.innerHTML = "";
-});
 
 function getEmployees() {
     db.collection('employees').get().then(doc => {
         loadEmployees(doc);
     });
 }
+addBtn.addEventListener('click', () => {
+    addEmployee();
+});
 
-function createEmployee() {
-    let searchedName = searchInput.value;
-    db.collection('employees').get().then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-            id = doc.id;
-            if (searchedName.length > 0) {
-                for (let i = 0; i < searchedName.length; i++) {
-                    let searchedResultP = document.createElement("p");
-                    searchedResultP.className = "searched-result-p";
-                    if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
-                        searchedResultP.setAttribute('id', id);
-                        searchedResultP.innerText = doc.data().name;
-                        searchResultDiv.appendChild(searchedResultP);
-                    }
-                    searchedResultP.onclick = function() {
-                        editEmployeeForm(doc);
-
-                        let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
-                        saveEditedInfoBtn.onclick = function() {
-                            if (id == doc.id) {
-                                updateEmployee(id)
-                                getEmployees()
-                                editEmployeeContainer.style.display = "none";
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    });
-}
-
-function editEmployeeForm(doc) {
-    id = doc.id;
-    let editName = document.getElementById('editName');
-    let editJob = document.getElementById("editJob");
-    let editPassport = document.getElementById("editPassport");
-    let editCountry = document.getElementById("editCountry");
-    if (editEmployeeContainer.style.display == "none") {
-        editEmployeeContainer.style.display = "block";
-    }
-    editName.value = doc.data().name;
-    editJob.value = doc.data().job;
-    editPassport.value = doc.data().passport;
-    editCountry.value = doc.data().country;
-}
-
-function addingEmployee() {
+function addEmployee() {
     db.collection('employees').add({
         name: employeeForm.name.value,
         job: employeeForm.job.value,
@@ -97,37 +38,6 @@ function addingEmployee() {
         country: employeeForm.country.value
     });
     clearEmployee()
-}
-
-function clearEmployee() {
-    employeeForm.name.value = '';
-    employeeForm.job.value = '';
-    employeeForm.passport.value = '';
-    employeeForm.country.value = '';
-}
-
-function updateEmployee(id) {
-    db.collection('employees').doc(id).update({
-        name: editName.value,
-        job: editJob.value,
-        passport: editPassport.value,
-        country: editCountry.value,
-    });
-}
-
-function deleteEmployee(employeeLI, id) {
-    const deleteEmployeeBtn = document.createElement("button");
-    deleteEmployeeBtn.className = 'delete-employee-btn';
-    deleteEmployeeBtn.innerText = "X";
-    deleteEmployeeBtn.addEventListener("click", () => {
-        db.collection('employees').doc(id).delete().then(() => {
-            console.log('Document succesfully deleted!');
-        }).catch(err => {
-            console.log('Error removing document', err);
-        });
-        employeeLI.remove();
-    });
-    employeeLI.appendChild(deleteEmployeeBtn);
 }
 
 function loadEmployees(employees) {
@@ -176,4 +86,95 @@ function loadEmployeeDetails(employeeLI, employee) {
         }
     }
     employeesUL.appendChild(employeeLI);
+}
+
+function deleteEmployee(employeeLI, id) {
+    const deleteEmployeeBtn = document.createElement("button");
+    deleteEmployeeBtn.className = 'delete-employee-btn';
+    deleteEmployeeBtn.innerText = "X";
+    deleteEmployeeBtn.addEventListener("click", () => {
+        db.collection('employees').doc(id).delete().then(() => {
+            console.log('Document succesfully deleted!');
+        }).catch(err => {
+            console.log('Error removing document', err);
+        });
+        employeeLI.remove();
+    });
+    employeeLI.appendChild(deleteEmployeeBtn);
+}
+searchInput.addEventListener("keyup", () => {
+    searchResultDiv.innerHTML = "";
+    if (searchInput.value == "") {
+        searchResultDiv.innerHTML = "";
+        return;
+    }
+    createEmployee()
+});
+
+function clearEmployee() {
+    employeeForm.name.value = '';
+    employeeForm.job.value = '';
+    employeeForm.passport.value = '';
+    employeeForm.country.value = '';
+}
+
+function createEmployee() {
+    let searchedName = searchInput.value;
+    db.collection('employees').get().then(querySnapshot => {
+        querySnapshot.forEach(doc => {
+            id = doc.id;
+            if (searchedName.length > 0) {
+                for (let i = 0; i < searchedName.length; i++) {
+                    let searchedResultP = document.createElement("p");
+                    searchedResultP.className = "searched-result-p";
+                    if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
+                        searchedResultP.setAttribute('id', id);
+                        searchedResultP.innerText = doc.data().name;
+                        searchResultDiv.appendChild(searchedResultP);
+                    }
+                    searchedResultP.onclick = function() {
+                        editEmployeeForm(doc);
+
+                        let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
+                        saveEditedInfoBtn.onclick = function() {
+                            if (id == doc.id) {
+                                updateEmployee(id)
+                                getEmployees()
+                                editEmployeeContainer.style.display = "none";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+searchTimesBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    searchResultDiv.innerHTML = "";
+});
+
+function updateEmployee(id) {
+    db.collection('employees').doc(id).update({
+        name: editName.value,
+        job: editJob.value,
+        passport: editPassport.value,
+        country: editCountry.value,
+    });
+}
+
+function editEmployeeForm(doc) {
+    id = doc.id;
+    let editName = document.getElementById('editName');
+    let editJob = document.getElementById("editJob");
+    let editPassport = document.getElementById("editPassport");
+    let editCountry = document.getElementById("editCountry");
+    if (editEmployeeContainer.style.display == "none") {
+        editEmployeeContainer.style.display = "block";
+    }
+    editName.value = doc.data().name;
+    editJob.value = doc.data().job;
+    editPassport.value = doc.data().passport;
+    editCountry.value = doc.data().country;
 }
