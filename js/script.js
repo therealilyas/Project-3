@@ -29,7 +29,7 @@ searchInput.addEventListener("keyup", () => {
         searchResultDiv.innerHTML = "";
         return;
     }
-    editingEmployee()
+    createEmployee()
 });
 searchTimesBtn.addEventListener("click", () => {
     searchInput.value = "";
@@ -38,11 +38,11 @@ searchTimesBtn.addEventListener("click", () => {
 
 function getEmployees() {
     db.collection('employees').get().then(doc => {
-        loadAllEmployees(doc);
+        loadEmployees(doc);
     });
 }
 
-function editingEmployee() {
+function createEmployee() {
     let searchedName = searchInput.value;
     db.collection('employees').get().then(querySnapshot => {
         querySnapshot.forEach(doc => {
@@ -57,21 +57,9 @@ function editingEmployee() {
                         searchResultDiv.appendChild(searchedResultP);
                     }
                     searchedResultP.onclick = function() {
-                        id = doc.id;
-                        let editName = document.getElementById('editName');
-                        let editJob = document.getElementById("editJob");
-                        let editPassport = document.getElementById("editPassport");
-                        let editCountry = document.getElementById("editCountry");
+                        editEmployeeForm(doc);
+
                         let saveEditedInfoBtn = document.getElementById("saveEditedInfoBtn");
-
-                        if (editEmployeeContainer.style.display == "none") {
-                            editEmployeeContainer.style.display = "block";
-                        }
-                        editName.value = doc.data().name;
-                        editJob.value = doc.data().job;
-                        editPassport.value = doc.data().passport;
-                        editCountry.value = doc.data().country;
-
                         saveEditedInfoBtn.onclick = function() {
                             if (id == doc.id) {
                                 updateEmployee(id)
@@ -86,6 +74,21 @@ function editingEmployee() {
     });
 }
 
+function editEmployeeForm(doc) {
+    id = doc.id;
+    let editName = document.getElementById('editName');
+    let editJob = document.getElementById("editJob");
+    let editPassport = document.getElementById("editPassport");
+    let editCountry = document.getElementById("editCountry");
+    if (editEmployeeContainer.style.display == "none") {
+        editEmployeeContainer.style.display = "block";
+    }
+    editName.value = doc.data().name;
+    editJob.value = doc.data().job;
+    editPassport.value = doc.data().passport;
+    editCountry.value = doc.data().country;
+}
+
 function addingEmployee() {
     db.collection('employees').add({
         name: employeeForm.name.value,
@@ -93,10 +96,10 @@ function addingEmployee() {
         passport: employeeForm.passport.value,
         country: employeeForm.country.value
     });
-    clearingEmployeeForm()
+    clearEmployee()
 }
 
-function clearingEmployeeForm() {
+function clearEmployee() {
     employeeForm.name.value = '';
     employeeForm.job.value = '';
     employeeForm.passport.value = '';
@@ -112,75 +115,65 @@ function updateEmployee(id) {
     });
 }
 
-function deleteEmployee() {
-    db.collection('employees').doc(id).delete().then(() => {
-        console.log('Document succesfully deleted!');
-    }).catch(err => {
-        console.log('Error removing document', err);
+function deleteEmployee(employeeLI, id) {
+    const deleteEmployeeBtn = document.createElement("button");
+    deleteEmployeeBtn.className = 'delete-employee-btn';
+    deleteEmployeeBtn.innerText = "X";
+    deleteEmployeeBtn.addEventListener("click", () => {
+        db.collection('employees').doc(id).delete().then(() => {
+            console.log('Document succesfully deleted!');
+        }).catch(err => {
+            console.log('Error removing document', err);
+        });
+        employeeLI.remove();
     });
-    employeeLI.remove();
+    employeeLI.appendChild(deleteEmployeeBtn);
 }
 
-function loadAllEmployees(employees) {
+function loadEmployees(employees) {
     employeesUL.innerHTML = "";
-    loadEmployee(employees);
-}
-
-function loadEmployee(employees) {
     employees.forEach((employee, id) => {
+        id = employee.id;
         const employeeLI = document.createElement('li');
         employeeLI.className = "employee-li";
-        id = employee.id;
-        employeeLI.setAttribute("data-id", id)
-
-        const employeeNameSpan = document.createElement('span');
-        employeeNameSpan.innerText = employee.data().name;
-
-        const deleteEmployeeBtn = document.createElement("button");
-        deleteEmployeeBtn.className = 'delete-employee-btn';
-        deleteEmployeeBtn.innerText = "X";
-
-        employeeLI.appendChild(employeeNameSpan);
-        employeeLI.appendChild(deleteEmployeeBtn);
-
-        deleteEmployeeBtn.addEventListener("click", () => {
-            deleteEmployee();
-        });
-        const employeeDetails = document.createElement("div");
-        employeeDetails.style.display = 'none';
-
-        const employeeJobP = document.createElement("p");
-        employeeJobP.innerText = employee.data().job;
-        employeeDetails.appendChild(employeeJobP);
-
-        const employeePassportP = document.createElement("p");
-        employeePassportP.innerText = employee.data().passport;
-        employeeDetails.appendChild(employeePassportP);
-
-        const employeeCountryP = document.createElement("p");
-        employeeCountryP.innerText = employee.data().country;
-        employeeDetails.appendChild(employeeCountryP);
-
-        employeeLI.appendChild(employeeDetails);
-
-        employeeLI.onclick = function() {
-            if (employeeDetails.style.display == 'block') {
-                employeeDetails.style.display = 'none';
-
-                employeeLI.style.backgroundColor = 'white';
-                employeeLI.style.color = 'black';
-
-                deleteEmployeeBtn.style.backgroundColor = 'maroon';
-                deleteEmployeeBtn.style.color = 'white';
-            } else {
-                employeeDetails.style.display = 'block';
-                employeeLI.style.backgroundColor = 'maroon';
-                employeeLI.style.color = 'white';
-
-                deleteEmployeeBtn.style.backgroundColor = 'white';
-                deleteEmployeeBtn.style.color = 'maroon';
-            }
-        }
-        employeesUL.appendChild(employeeLI);
+        employeeLI.setAttribute("data-id", id);
+        deleteEmployee(employeeLI, id);
+        showEmployeeDetails(employeeLI, employee);
     });
+}
+
+function showEmployeeDetails(employeeLI, employee) {
+    const employeeDetails = document.createElement("div");
+    employeeDetails.style.display = 'none';
+
+    const employeeNameSpan = document.createElement('span');
+    employeeNameSpan.innerText = employee.data().name;
+    employeeLI.appendChild(employeeNameSpan);
+
+    const employeeJobP = document.createElement("p");
+    employeeJobP.innerText = employee.data().job;
+    employeeDetails.appendChild(employeeJobP);
+
+    const employeePassportP = document.createElement("p");
+    employeePassportP.innerText = employee.data().passport;
+    employeeDetails.appendChild(employeePassportP);
+
+    const employeeCountryP = document.createElement("p");
+    employeeCountryP.innerText = employee.data().country;
+    employeeDetails.appendChild(employeeCountryP);
+
+    employeeLI.appendChild(employeeDetails);
+
+    employeeLI.onclick = function() {
+        if (employeeDetails.style.display == 'block') {
+            employeeDetails.style.display = 'none';
+            employeeLI.style.backgroundColor = 'white';
+            employeeLI.style.color = 'black';
+        } else {
+            employeeDetails.style.display = 'block';
+            employeeLI.style.backgroundColor = 'maroon';
+            employeeLI.style.color = 'white';
+        }
+    }
+    employeesUL.appendChild(employeeLI);
 }
