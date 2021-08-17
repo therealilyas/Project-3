@@ -20,14 +20,27 @@ function init() {
     fetchEmployees()
 }
 
+searchTimesBtn.addEventListener("click", () => {
+    searchInput.value = "";
+    searchResultDiv.innerHTML = "";
+});
+addBtn.addEventListener('click', () => {
+    addEmployee();
+});
+searchInput.addEventListener("keyup", () => {
+    searchResultDiv.innerHTML = "";
+    if (searchInput.value == "") {
+        searchResultDiv.innerHTML = "";
+        return;
+    }
+    createEmployee()
+});
+
 function fetchEmployees() {
     db.collection('employees').get().then(doc => {
         loadEmployees(doc);
     });
 }
-addBtn.addEventListener('click', () => {
-    addEmployee();
-});
 
 function addEmployee() {
     db.collection('employees').add({
@@ -113,15 +126,6 @@ function onclickStyleEmployee(btn, efirstElement, secondElement) {
     }
 }
 
-searchInput.addEventListener("keyup", () => {
-    searchResultDiv.innerHTML = "";
-    if (searchInput.value == "") {
-        searchResultDiv.innerHTML = "";
-        return;
-    }
-    createEmployee()
-});
-
 function clearEmployee() {
     employeeForm.name.value = '';
     employeeForm.job.value = '';
@@ -160,11 +164,6 @@ function createEmployee() {
         });
     });
 }
-
-searchTimesBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    searchResultDiv.innerHTML = "";
-});
 
 function updateEmployee(id) {
     db.collection('employees').doc(id).update({
