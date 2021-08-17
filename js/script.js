@@ -51,14 +51,12 @@ function editingEmployee() {
                 for (let i = 0; i < searchedName.length; i++) {
                     let searchedResultP = document.createElement("p");
                     searchedResultP.className = "searched-result-p";
-
                     if (doc.data().name.toLowerCase().includes(searchedName.toLowerCase())) {
                         searchedResultP.setAttribute('id', id);
                         searchedResultP.innerText = doc.data().name;
                         searchResultDiv.appendChild(searchedResultP);
                     }
                     searchedResultP.onclick = function() {
-
                         id = doc.id;
                         let editName = document.getElementById('editName');
                         let editJob = document.getElementById("editJob");
@@ -69,7 +67,6 @@ function editingEmployee() {
                         if (editEmployeeContainer.style.display == "none") {
                             editEmployeeContainer.style.display = "block";
                         }
-
                         editName.value = doc.data().name;
                         editJob.value = doc.data().job;
                         editPassport.value = doc.data().passport;
@@ -149,7 +146,6 @@ function loadEmployee(employees) {
         deleteEmployeeBtn.addEventListener("click", () => {
             deleteEmployee();
         });
-
         const employeeDetails = document.createElement("div");
         employeeDetails.style.display = 'none';
 
@@ -176,7 +172,6 @@ function loadEmployee(employees) {
 
                 deleteEmployeeBtn.style.backgroundColor = 'maroon';
                 deleteEmployeeBtn.style.color = 'white';
-
             } else {
                 employeeDetails.style.display = 'block';
                 employeeLI.style.backgroundColor = 'maroon';
@@ -185,7 +180,6 @@ function loadEmployee(employees) {
                 deleteEmployeeBtn.style.backgroundColor = 'white';
                 deleteEmployeeBtn.style.color = 'maroon';
             }
-
         }
         employeesUL.appendChild(employeeLI);
     });
