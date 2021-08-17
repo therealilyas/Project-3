@@ -13,11 +13,10 @@ editEmployeeContainer.style.display = 'none';
 
 const employeeForm = document.querySelector('.container-form .form');
 const addBtn = document.querySelector('.add-employee-btn');
-let id;
+let id = '';
 init();
 
 function init() {
-    id = '';
     getEmployees()
 }
 
