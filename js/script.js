@@ -138,11 +138,11 @@ function loadEmployees(employees) {
         employeeLI.className = "employee-li";
         employeeLI.setAttribute("data-id", id);
         deleteEmployee(employeeLI, id);
-        showEmployeeDetails(employeeLI, employee);
+        loadEmployeeDetails(employeeLI, employee);
     });
 }
 
-function showEmployeeDetails(employeeLI, employee) {
+function loadEmployeeDetails(employeeLI, employee) {
     const employeeDetails = document.createElement("div");
     employeeDetails.style.display = 'none';
 
