@@ -46,8 +46,28 @@ function loadEmployees(employees) {
         const employeeLI = document.createElement('li');
         employeeLI.className = "employee-li";
         employeeLI.setAttribute("data-id", id);
-        deleteEmployee(employeeLI, id);
+
+        const deleteEmployeeBtn = document.createElement("button");
+        deleteEmployeeBtn.className = 'delete-employee-btn';
+        deleteEmployeeBtn.innerText = "X";
+
+        employeeLI.appendChild(deleteEmployeeBtn);
+
+        deleteEmployee(employeeLI, id, deleteEmployeeBtn);
+
         loadEmployeeDetails(employeeLI, employee);
+    });
+}
+
+function deleteEmployee(employeeLI, id, btn) {
+
+    btn.addEventListener("click", () => {
+        db.collection('employees').doc(id).delete().then(() => {
+            console.log('Document succesfully deleted!');
+        }).catch(err => {
+            console.log('Error removing document', err);
+        });
+        employeeLI.remove();
     });
 }
 
@@ -73,34 +93,26 @@ function loadEmployeeDetails(employeeLI, employee) {
 
     employeeLI.appendChild(employeeDetails);
 
-    employeeLI.onclick = function() {
-        if (employeeDetails.style.display == 'block') {
-            employeeDetails.style.display = 'none';
-            employeeLI.style.backgroundColor = 'white';
-            employeeLI.style.color = 'black';
-        } else {
-            employeeDetails.style.display = 'block';
-            employeeLI.style.backgroundColor = 'maroon';
-            employeeLI.style.color = 'white';
-        }
-    }
+    onclickStyleEmployee(employeeLI, employeeDetails, employeeLI)
+
     employeesUL.appendChild(employeeLI);
 }
 
-function deleteEmployee(employeeLI, id) {
-    const deleteEmployeeBtn = document.createElement("button");
-    deleteEmployeeBtn.className = 'delete-employee-btn';
-    deleteEmployeeBtn.innerText = "X";
-    deleteEmployeeBtn.addEventListener("click", () => {
-        db.collection('employees').doc(id).delete().then(() => {
-            console.log('Document succesfully deleted!');
-        }).catch(err => {
-            console.log('Error removing document', err);
-        });
-        employeeLI.remove();
-    });
-    employeeLI.appendChild(deleteEmployeeBtn);
+function onclickStyleEmployee(btn, efirstElement, secondElement) {
+    btn.onclick = function() {
+        if (efirstElement.style.display == 'block') {
+            efirstElement.style.display = 'none';
+
+            secondElement.style.backgroundColor = 'white';
+            secondElement.style.color = 'black';
+        } else {
+            efirstElement.style.display = 'block';
+            secondElement.style.backgroundColor = 'maroon';
+            secondElement.style.color = 'white';
+        }
+    }
 }
+
 searchInput.addEventListener("keyup", () => {
     searchResultDiv.innerHTML = "";
     if (searchInput.value == "") {
