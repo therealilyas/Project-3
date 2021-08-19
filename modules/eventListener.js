@@ -1,13 +1,18 @@
-import { searchTimesBtn, addBtn, searchInput } from '../modules/variable.js'
+import createEmployee from '../modules/service.js'
+import {
+    searchTimesBtn as clearBtn,
+    addBtn as addForm,
+    searchInput as searchForm,
+} from '../modules/variable.js'
 
-searchTimesBtn.addEventListener("click", () => {
+clearBtn.addEventListener("click", () => {
     searchInput.value = "";
     searchResultDiv.innerHTML = "";
 });
-addBtn.addEventListener('click', () => {
+addForm.addEventListener('click', () => {
     addEmployee();
 });
-searchInput.addEventListener("keyup", () => {
+searchForm.addEventListener("keyup", () => {
     searchResultDiv.innerHTML = "";
     if (searchInput.value == "") {
         searchResultDiv.innerHTML = "";
@@ -15,3 +20,5 @@ searchInput.addEventListener("keyup", () => {
     }
     createEmployee()
 });
+
+export default clearBtn

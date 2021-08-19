@@ -1,6 +1,6 @@
-import addEmployee from '../modules/add.js'
+import db from '../modules/db.js'
 import updateEmployee from '../modules/update.js'
-
+import fetchEmployees from '../modules/employee.js'
 import {
     employeeName,
     employeeJob,
@@ -17,9 +17,9 @@ import {
     employeeForm,
     addBtn,
 } from '../modules/variable.js'
+let id = '';
 
-
-export function createEmployee() {
+export default function createEmployee() {
     let searchedName = searchInput.value;
     db.collection('employees').get().then(querySnapshot => {
         querySnapshot.forEach(doc => {
