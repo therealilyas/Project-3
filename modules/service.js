@@ -1,6 +1,5 @@
 import addEmployee from '../modules/add.js'
 import updateEmployee from '../modules/update.js'
-import fetchEmployees from '../modules/employee.js'
 
 import {
     employeeName,
@@ -19,32 +18,7 @@ import {
     addBtn,
 } from '../modules/variable.js'
 
-let id = '';
 
-init();
-
-function init() {
-    fetchEmployees()
-}
-
-// eventListeners
-searchTimesBtn.addEventListener("click", () => {
-    searchInput.value = "";
-    searchResultDiv.innerHTML = "";
-});
-addBtn.addEventListener('click', () => {
-    addEmployee();
-});
-searchInput.addEventListener("keyup", () => {
-    searchResultDiv.innerHTML = "";
-    if (searchInput.value == "") {
-        searchResultDiv.innerHTML = "";
-        return;
-    }
-    createEmployee()
-});
-
-//Services
 export function createEmployee() {
     let searchedName = searchInput.value;
     db.collection('employees').get().then(querySnapshot => {

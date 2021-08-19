@@ -11,7 +11,7 @@
 <body>
     <div class="container-form">
         <h2>Adding Employees Form</h2>
-        <form class="form">
+        <form class="form" id='employeeForm'>
             <table>
                 <tr>
                     <td class="label">Name:</td>
@@ -32,7 +32,7 @@
                 </tr>
             </table>
         </form>
-        <button type="submit" class="add-employee-btn">
+        <button type="submit" class="add-employee-btn" id='addBtn'>
             Add Employee</bFutton>
 
     </div>
@@ -104,7 +104,8 @@
   const db = firebase.firestore();
 </script>
 
-    <script src="js/script.js"></script>
+    <script type="module"src="js/script.js"></script>
+
 </body>
 
 </html>
